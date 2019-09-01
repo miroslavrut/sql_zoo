@@ -3,10 +3,11 @@
 ## Exercises
 * [SELECT basics](#select-basics)
 * [SELECT from WORLD](#select-from-world)
+* [SELECT from NOBEL](#select-from-nobel)
 
 ## table used
 [`world`](https://sqlzoo.net/wiki/Read_the_notes_about_this_table.)
-
+nobel(yr, subject, winner)
 
 ### SELECT basics
 
@@ -113,5 +114,103 @@ FROM world
 WHERE name LIKE '%a%' AND name LIKE '%e%' AND name LIKE '%i%' AND name LIKE '%o%' AND name LIKE '%u%'
 AND name NOT LIKE '% %';
 ```
+
+### SELECT from NOBEL
+
+1. Winners from 1950
+```sql
+SELECT yr, subject, winner
+FROM nobel
+WHERE yr = 1950;
+```
+2. 1962 Literature
+```sql
+SELECT winner
+FROM nobel
+WHERE yr = 1962
+AND subject = 'Literature';
+```
+3. Albert Einstein
+```sql
+SELECT yr, subject
+FROM nobel
+WHERE winner = 'Albert Einstein';
+```
+4. Recent Peace Prizes
+```sql
+SELECT winner
+FROM nobel
+WHERE subject = 'Peace' AND yr >= 2000;
+```
+5. Literature in the 1980's
+```sql
+SELECT yr, subject, winner
+FROM nobel
+WHERE subject = 'Literature' AND yr BETWEEN 1980 AND 1989;
+```
+6. Only Presidents
+```sql
+SELECT * FROM nobel
+WHERE winner IN('Theodore Roosevelt', 
+                'Woodrow Wilson', 
+                'Jimmy Carter', 
+                'Barack Obama');
+```
+7. John
+```sql
+SELECT winner FROM nobel
+WHERE winner LIKE 'John%';
+```
+8. Chemistry and Physics from different years
+```sql
+SELECT yr, subject, winner 
+FROM nobel
+WHERE subject = 'Physics' AND yr = 1980 
+OR subject = 'Chemistry' AND yr = 1984;
+```
+9. Exclude Chemists and Medics
+```sql
+SELECT yr, subject, winner FROM nobel
+WHERE yr = 1980 AND subject NOT IN('Chemistry', 'Medicine');
+```
+10. Early Medicine, Late Literature
+```sql
+SELECT yr, subject, winner
+FROM nobel
+WHERE subject = 'Medicine' AND yr < 1910
+OR subject = 'Literature' AND yr >= 2004;
+```
+11. Umlaut
+```sql
+SELECT * FROM nobel
+WHERE winner LIKE 'Peter Gr_nberg';
+```
+12. Apostrophe
+Apostrophe is escaped by typing it double `''`
+```sql
+SELECT * FROM nobel
+WHERE winner LIKE 'Eugene O''neill';
+```
+13. Knights of the realm
+```sql
+SELECT winner, yr, subject FROM nobel
+WHERE winner LIKE 'Sir%' ORDER BY yr DESC;
+```
+14. Chemistry and Physics last
+`IN` in `order` is returned as boolean, so if it's true it will return 1, and place it afther all zeroes
+```sql
+SELECT winner, subject FROM nobel
+WHERE yr = 1984
+ORDER BY subject IN('Chemistry','Physics'), subject, winner;
+```
+Solution above is not standard sql and may not work in all databeses, so better use `CASE`
+```sql
+SELECT winner, subject FROM nobel
+WHERE yr = 1984
+ORDER BY
+CASE WHEN subject IN ('Physics', 'Chemistry') THEN 1 ELSE 0 end,
+subject, winner;
+```
+
 
 
