@@ -4,7 +4,12 @@
 * [SELECT basics](#select-basics)
 * [SELECT from WORLD](#select-from-world)
 
+## table's used
+[`world`](https://sqlzoo.net/wiki/Read_the_notes_about_this_table.)
+
+
 ### SELECT basics
+
 
 1. ##### Introducing the `world`
 ```sql
@@ -44,9 +49,7 @@ FROM world
 WHERE population >= 200000000;
 ```
 4. ##### South America In millions
-`LIKE` is case-insensitive search/match operator, can be used with wildcards:
-	- % representing zero or more characters
-	- _ representing a single character
+`LIKE` is case-insensitive search/match operator, can be used with wildcards:% representing zero or more characters, _ representing a single character
 ```sql
 SELECT name, population/1000000 AS population_milion
 FROM world
