@@ -4,7 +4,7 @@
 * [SELECT basics](#select-basics)
 * [SELECT from WORLD](#select-from-world)
 
-## table's used
+## table used
 [`world`](https://sqlzoo.net/wiki/Read_the_notes_about_this_table.)
 
 
