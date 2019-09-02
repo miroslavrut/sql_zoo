@@ -5,10 +5,11 @@
 * [SELECT from WORLD](#select-from-world)
 * [SELECT from NOBEL](#select-from-nobel)
 * [SELECT in SELECT](#select-in-select)
+* [Aggregate functions](#aggregate-functions)
 
 ## table used
 [`world`](https://sqlzoo.net/wiki/Read_the_notes_about_this_table.) </br>
-world(name, continent, area, population, gdp)
+world(name, continent, area, population, gdp) </br>
 nobel(yr, subject, winner)
 
 ### SELECT basics
@@ -303,5 +304,58 @@ WHERE population >= ALL(SELECT population*3 FROM world y
 
 #### NOTE ON SUBQUERIES
    * [stackoverflow](https://stackoverflow.com/questions/46927348/why-does-this-correlated-subquery-work-sqlzoo-select-within-select-7)
+
+### Aggregate functions
+
+*An aggregate function takes many values and delivers just one value. These functions are even more useful when used with the GROUP BY clause.
+*`DISTINCT`-By default the result of a SELECT may contain duplicate rows. We can remove these duplicates using the DISTINCT key word.
+*`ORDER BY`-ORDER BY permits us to see the result of a SELECT in any particular order. We may indicate ASC or DESC for ascending (smallest first, largest last) or descending order.
+*By including a GROUP BY clause functions such as SUM and COUNT are applied to groups of items sharing values. When you specify GROUP BY continent the result is that you get only one 
+row for each different value of continent. All the other columns must be "aggregated" by one of SUM, COUNT
+*The HAVING clause allows use to filter the groups which are displayed. The WHERE clause filters rows before the aggregation, the HAVING clause filters after the aggregation
+if a ORDER BY clause is included we can refer to columns by their position.
+
+
+1. ##### Total world population
+```sql
+SELECT SUM(population)
+FROM world;
+```
+2. ##### List of continents
+```sql
+SELECT DISTINCT continent FROM world;
+```
+3. ##### GDP of Africa
+```sql
+SELECT SUM(gdp) FROM world
+WHERE continent='Africa';
+```
+4. ##### Count the big countries
+```sql
+SELECT COUNT(name) FROM world
+WHERE area >= 1000000;
+```
+5. ##### Baltic states population
+```sql
+SELECT SUM(population) FROM world
+WHERE name IN('Estonia','Latvia','Lithuania');
+```
+6. ##### Counting the countries of each continent
+```sql
+SELECT continent, COUNT(name) FROM world
+GROUP BY continent;
+```
+7. ##### Counting big countries in each continent
+```sql
+SELECT continent, COUNT(name) FROM world
+WHERE population > 10000000
+GROUP BY continent;
+```
+8. ##### Counting big continents
+```sql
+SELECT continent FROM world
+GROUP BY continent
+HAVING SUM(population) > 100000000;
+```
 
 
