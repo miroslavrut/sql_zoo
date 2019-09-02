@@ -307,12 +307,12 @@ WHERE population >= ALL(SELECT population*3 FROM world y
 
 ### Aggregate functions
 
-*An aggregate function takes many values and delivers just one value. These functions are even more useful when used with the GROUP BY clause.
-*`DISTINCT`-By default the result of a SELECT may contain duplicate rows. We can remove these duplicates using the DISTINCT key word.
-*`ORDER BY`-ORDER BY permits us to see the result of a SELECT in any particular order. We may indicate ASC or DESC for ascending (smallest first, largest last) or descending order.
-*By including a GROUP BY clause functions such as SUM and COUNT are applied to groups of items sharing values. When you specify GROUP BY continent the result is that you get only one 
+* An aggregate function takes many values and delivers just one value. These functions are even more useful when used with the GROUP BY clause.
+* `DISTINCT`-By default the result of a SELECT may contain duplicate rows. We can remove these duplicates using the DISTINCT key word.
+* `ORDER BY`-ORDER BY permits us to see the result of a SELECT in any particular order. We may indicate ASC or DESC for ascending (smallest first, largest last) or descending order.
+* By including a GROUP BY clause functions such as SUM and COUNT are applied to groups of items sharing values. When you specify GROUP BY continent the result is that you get only one 
 row for each different value of continent. All the other columns must be "aggregated" by one of SUM, COUNT
-*The HAVING clause allows use to filter the groups which are displayed. The WHERE clause filters rows before the aggregation, the HAVING clause filters after the aggregation
+* The HAVING clause allows use to filter the groups which are displayed. The WHERE clause filters rows before the aggregation, the HAVING clause filters after the aggregation
 if a ORDER BY clause is included we can refer to columns by their position.
 
 
