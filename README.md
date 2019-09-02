@@ -4,9 +4,11 @@
 * [SELECT basics](#select-basics)
 * [SELECT from WORLD](#select-from-world)
 * [SELECT from NOBEL](#select-from-nobel)
+* [SELECT in SELECT](#select-in-select)
 
 ## table used
-[`world`](https://sqlzoo.net/wiki/Read_the_notes_about_this_table.)
+[`world`](https://sqlzoo.net/wiki/Read_the_notes_about_this_table.) </br>
+world(name, continent, area, population, gdp)
 nobel(yr, subject, winner)
 
 ### SELECT basics
@@ -212,5 +214,94 @@ CASE WHEN subject IN ('Physics', 'Chemistry') THEN 1 ELSE 0 end,
 subject, winner;
 ```
 
+### SELECT in SELECT
+The result of a SELECT statement may be used as a value in another statement. (some versions insist on using alias on subquery `AS somone`)
+The subquery may return more than one result so it is safer to use `IN` to cope with this possibility.
+example:
+```
+SELECT name, continent FROM world
+WHERE continent IN
+(SELECT continent FROM world WHERE name='Brazil'
+                                 OR name='Mexico')
+```
+
+You can use the words ALL or ANY where the right side of the operator might have multiple values.
+
+
+1. ##### Bigger than Russia
+```sql
+SELECT name FROM world
+WHERE population > 
+(SELECT population FROM world WHERE name = 'Russia');
+```
+2. ##### Richer than UK
+```sql
+SELECT name
+FROM world
+WHERE continent='Europe' AND
+gdp/population>(
+  SELECT gdp/population FROM world 
+  WHERE name='United Kingdom'
+);
+```
+3. ##### Neighbours of Argentina and Australia
+```sql
+SELECT name, continent FROM world
+WHERE continent IN (
+  SELECT continent FROM world 
+  WHERE name='Argentina' OR name='Australia'
+) ORDER by name;
+```
+4. ##### Between Canada and Poland
+```sql
+SELECT name, population FROM world
+WHERE population >(
+  SELECT population FROM world WHERE name='Canada')
+and population <(
+  select population FROM world WHERE name='Poland'
+);
+```
+5. ##### Percentages of Germany
+use `CONCAT` to add '%' char 
+```sql
+SELECT name, 
+  CONCAT(ROUND(100*population/(SELECT population FROM world WHERE name='Germany')), '%')
+FROM world
+WHERE continent='Europe';
+```
+6. ##### Bigger than every country in Europe
+Some values may have NULL so use IS NOT NULL or > 0;
+```sql
+SELECT name FROM world
+WHERE gdp > ALL(SELECT gdp FROM world WHERE continent='Europe' AND gdp IS NOT NULL);
+```
+7. ##### Largest in each continent
+```sql
+SELECT continent, name, area FROM world x
+WHERE area >= ALL(SELECT area FROM world y
+                  WHERE y.continent=x.continent
+                  AND area>0);
+```
+8. ##### First country of each continent (alphabetically)
+```sql
+SELECT continent, name FROM world x
+WHERE name <= ALL (SELECT name FROM world y
+                   WHERE y.continent=x.continent)
+```
+9. ##### 
+```sql
+SELECT name, continent, population FROM world x
+WHERE 25000000 >= ALL(SELECT population FROM world y
+                      WHERE y.continent = x.continent AND y.population>0);
+```
+10. ##### 
+```sql
+SELECT name, continent FROM world x
+WHERE population >= ALL(SELECT population*3 FROM world y
+                        WHERE x.continent=y.continent AND y.name!=x.name);
+```
+
+#### NOTE ON SUBQUERIES
+   * [stackoverflow](https://stackoverflow.com/questions/46927348/why-does-this-correlated-subquery-work-sqlzoo-select-within-select-7)
 
 
