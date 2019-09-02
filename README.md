@@ -6,6 +6,7 @@
 * [SELECT from NOBEL](#select-from-nobel)
 * [SELECT in SELECT](#select-in-select)
 * [Aggregate functions](#aggregate-functions)
+* [JOIN operation](#join-operation)
 
 ## table used
 [`world`](https://sqlzoo.net/wiki/Read_the_notes_about_this_table.) </br>
@@ -356,6 +357,102 @@ GROUP BY continent;
 SELECT continent FROM world
 GROUP BY continent
 HAVING SUM(population) > 100000000;
+```
+
+### JOIN operation
+
+1. 
+```sql
+SELECT matchid, player FROM goal 
+WHERE teamid = 'GER';
+```
+2. 
+```sql
+SELECT id,stadium,team1,team2
+ FROM game
+WHERE id = 1012;
+```
+3. 
+```sql
+SELECT player,teamid,stadium,mdate
+FROM goal JOIN game 
+ON game.id=goal.matchid
+WHERE teamid = 'GER';
+```
+4. 
+```sql
+SELECT team1,team2,player
+FROM goal JOIN game
+ON game.id=goal.matchid
+WHERE player LIKE 'mario%';
+```
+5. 
+```sql
+SELECT player, teamid, coach, gtime
+FROM goal JOIN eteam
+ON goal.teamid=eteam.id 
+WHERE gtime<=10;
+```
+6. 
+```sql
+SELECT mdate, teamname
+FROM game JOIN eteam
+ON game.team1 = eteam.id
+WHERE coach='Fernando Santos';
+```
+7. 
+```sql
+SELECT player 
+FROM  goal JOIN game
+ON game.id=goal.matchid
+WHERE stadium='National Stadium, Warsaw';
+```
+8. 
+```sql
+SELECT DISTINCT player
+FROM goal JOIN game
+ON game.id=goal.matchid
+WHERE goal.teamid<>'GER' AND (team1='GER' OR team2='GER');
+```
+9. 
+```sql
+SELECT teamname, COUNT(*)
+FROM eteam JOIN goal
+ON id=teamid
+GROUP BY teamname;
+```
+10. 
+```sql
+SELECT stadium, COUNT(*)
+FROM game JOIN goal
+ON game.id=goal.matchid
+GROUP BY stadium;
+```
+11. 
+```sql
+SELECT matchid, mdate, COUNT(player)
+FROM game JOIN goal
+ON (matchid=id AND (team1 = 'POL' OR team2 = 'POL'))
+GROUP BY matchid, mdate
+```
+12. 
+```sql
+SELECT matchid, mdate, COUNT(*) AS goals
+FROM game JOIN goal
+ON id=matchid
+WHERE goal.teamid='GER'
+GROUP BY matchid,mdate;
+```
+13. 
+```sql
+SELECT mdate,
+       team1,
+       SUM(CASE WHEN teamid = team1 THEN 1 ELSE 0 END) AS score1,
+       team2,
+       SUM(CASE WHEN teamid = team2 THEN 1 ELSE 0 END) AS score2 FROM
+    game LEFT JOIN goal ON (id = matchid)
+    GROUP BY mdate,team1,team2
+    ORDER BY mdate, matchid, team1, team2;
 ```
 
 
