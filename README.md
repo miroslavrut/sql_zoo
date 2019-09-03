@@ -8,6 +8,8 @@
 * [Aggregate functions](#aggregate-functions)
 * [JOIN operation](#join-operation)
 * [More JOIN](#more-join)
+* [Using NULL](#using-null)
+* [Self JOIN](#self-join)
 
 ## table used
 [`world`](https://sqlzoo.net/wiki/Read_the_notes_about_this_table.) </br>
@@ -469,7 +471,9 @@ SELECT mdate,
 ```
 
 ### More JOIN
-
+movie(id,title,yr,director,budget,gross);
+actor(id,name);
+acsting(movieid,actorid,ord);
 
 1. 
 ```sql
@@ -586,4 +590,146 @@ WHERE name<>'Art Garfunkel' AND movieid IN (
   JOIN actor ON (actorid=id AND name='Art Garfunkel'))
 ```
 
+### Using NULL
+teacher(id,dept,name,phone,mobile);
+dept(id,name);
+
+1. ##### 
+```sql
+SELECT name FROM teacher
+WHERE dept IS NULL;
+```
+2. ##### 
+```sql
+SELECT teacher.name, dept.name
+ FROM teacher INNER JOIN dept
+           ON (teacher.dept=dept.id)
+```
+3. ##### 
+```sql
+SELECT teacher.name, dept.name FROM teacher
+LEFT JOIN dept
+ON teacher.dept=dept.id;
+```
+4. ##### 
+```sql
+SELECT teacher.name, dept.name FROM teacher
+RIGHT JOIN dept
+ON teacher.dept=dept.id;
+```
+5. ##### 
+```sql
+SELECT name, COALESCE(teacher.mobile,'07986 444 2266') 
+FROM teacher
+```
+6. ##### 
+```sql
+select COALESCE(teacher.name,'None'),
+       COALESCE(dept.name, 'None')
+FROM teacher LEFT JOIN dept
+ON teacher.dept=dept.id
+```
+7. ##### 
+```sql
+SELECT COUNT(name), COUNT(mobile) FROM teacher;
+```
+8. ##### 
+```sql
+SELECT dept.name, COUNT(teacher.dept)
+FROM teacher RIGHT JOIN dept
+ON teacher.dept=dept.id
+GROUP BY dept.name;
+```
+9. ##### 
+```sql
+SELECT name,
+CASE WHEN dept IN (1,2) THEN 'Sci'
+ELSE 'Art'END
+ FROM teacher
+```
+10. ##### 
+```sql
+SELECT name,
+CASE WHEN dept IN(1,2) THEN 'Sci'
+WHEN dept=3 THEN 'Art' ELSE 'None'END
+FROM teacher;
+```
+
+### Self JOIN
+stops(id, name),
+route(num, company, pos, stop)
+
+1. ##### 
+```sql
+SELECT COUNT(*) FROM stops;
+```
+2. ##### 
+```sql
+SELECT id FROM stops
+WHERE name='Craiglockhart';
+```
+3. ##### 
+```sql
+SELECT id, name FROM stops JOIN route
+ON stops.id = route.stop
+WHERE num=4;
+```
+4. ##### 
+```sql
+SELECT company, num, COUNT(*)
+FROM route WHERE stop=149 OR stop=53
+GROUP BY company, num
+HAVING COUNT(*)=2;
+```
+5. ##### 
+```SELECT a.company, a.num, a.stop, b.stop
+FROM route a JOIN route b ON
+  (a.company=b.company AND a.num=b.num)
+WHERE a.stop=53 AND b.stop=(SELECT id FROM stops
+                            WHERE name='London Road');sql
+
+```
+6. ##### 
+```sql
+SELECT a.company, a.num, stopa.name, stopb.name
+FROM route a JOIN route b ON
+  (a.company=b.company AND a.num=b.num)
+  JOIN stops stopa ON (a.stop=stopa.id)
+  JOIN stops stopb ON (b.stop=stopb.id)
+WHERE stopa.name='Craiglockhart' AND
+      stopb.name='London Road';
+```
+7. ##### 
+```sql
+SELECT DISTINCT a.company, a.num
+FROM route a JOIN route b ON
+  (a.company=b.company AND a.num=b.num)
+  JOIN stops stopa ON (a.stop=stopa.id)
+  JOIN stops stopb ON (b.stop=stopb.id)
+WHERE stopa.name='Haymarket' AND stopb.name='Leith'
+```
+8. ##### 
+```sql
+SELECT a.company, a.num
+FROM route a JOIN route b
+ON(a.num=b.num AND a.company=b.company)
+JOIN stops stopa ON (a.stop=stopa.id)
+JOIN stops stopb ON (b.stop=stopb.id)
+WHERE stopa.name='Craiglockhart' AND stopb.name='Tollcross';
+```
+9. ##### 
+```sql
+SELECT DISTINCT stopa.name, a.company, a.num
+FROM route a JOIN route b
+ON(a.num=b.num AND a.company=b.company)
+JOIN stops stopa ON (a.stop=stopa.id)
+JOIN stops stopb ON (b.stop=stopb.id)
+WHERE stopb.name='Craiglockhart';
+```
+10. ##### 
+```sql
+
+```
+
+I have no idea how to pass 10. Will try some other time, aslo revist 6-9
 
